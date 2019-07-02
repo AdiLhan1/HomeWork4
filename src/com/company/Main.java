@@ -3,90 +3,146 @@ package com.company;
 import java.util.Random;
 
 public class Main {
-    static int[] health = {600, 250, 250, 250, 150};
-    static int[] hits = {50, 20, 20, 20, 0};
-    static String[] hitTypes = {"Physical", "Physical", "Magical", "Psyho", "Medical"};
+
+    public static int[] health = {1700, 200, 200, 220, 180, 650, 220, 220, 250};//0й элемент это босс
+    public static int[] hits = {50, 20, 20, 20, 15, 10, 20, 20, 25};
+    public static String[] hitTypes = {"Physical ", "Physical", "Magic ", "Mental", "Medic",
+            "Tank", "Lovkach", "Berserk", "Tor"};
 
     public static void main(String[] args) {
-        main();
-    }
+        int i = 1;
+        while (!isFinished()) {
 
-    public static void main() {
-        while (!isFinish()) {
+            System.out.println("Round:" + i);
             changeBossDefence();
             round();
-            printStatics();
+            printStatistics();
+            i++;
+
         }
     }
 
-    public static boolean isFinish() {
+    public static void round() {
+        for (int i = 1; i <= 8; i++) {
+            if (health[0] > 0) {
+                if (health[i] > 0) {
+                    int damagedHealthOfBoss = playerHit(i);
+                    if (damagedHealthOfBoss < 0) {
+                        health[0] = 0;
+                    } else {
+                        health[0] = damagedHealthOfBoss;
+                    }
+                } else {
+                    health[0] = health[0];
+                }
+            }
+        }
+        if (health[0] > 0) {
+            for (int i = 1; i <= 8; i++) {
+                if (hitTypes[0].equals(hitTypes[5])) {
+                    int tanksDefence = 25;
+                    if (health[i] == 5) {
+                        health[5] = bossHit(5) - tanksDefence * 7;
+                    } else {
+                        health[i] = bossHit(i) + tanksDefence;
+                    }
+                } else if (hitTypes[0].equals(hitTypes[6])) {
+                    if (health[i] <= 0) {
+                        health[i] = 0;
+                    }
+                    if (health[i] == health[6]) {
+                        health[i] = health[i];
+                    } else {
+                        health[i] = bossHit(i);
+                    }
+                } else if (hitTypes[0].equals(hitTypes[7])) {
+                    if (health[i] <= 0) {
+                        health[i] = 0;
+                    }
+                    if (health[i] == health[7]) {
+                        health[i] = bossHit(i) + 15;
+                    } else {
+                        health[i] = bossHit(i);
+                    }
+                } else if (hitTypes[0].equals(hitTypes[8])) {
+                    if (health[i] <= 0) {
+                        health[i] = 0;
+                    }
+                    health[i] = bossHit(i);
+
+                } else {
+                    if (health[i] <= 0) {
+                        health[i] = 0;
+                    } else {
+                        health[i] = bossHit(i);
+                    }
+                }
+                if (health[i] > 0) {
+                    if (health[i] == health[4]) {
+                        health[i] = health[i];
+                    } else if (health[4] <= 0) {
+                        health[i] = health[i];
+                    } else {
+                        health[i] = health[i] + 30;
+                    }
+                }
+            }
+        }
+
+    }
+
+    public static void printStatistics() {
+        System.out.println("__________________________________");
+        System.out.println("Boss health: " + health[0]);
+        System.out.println("Warrior health: " + health[1]);
+        System.out.println("Magic health: " + health[2]);
+        System.out.println("Kinetic health: " + health[3]);
+        System.out.println("Doctor health: " + health[4]);
+        System.out.println("Tank health: " + health[5]);
+        System.out.println("Lovkach health: " + health[6]);
+        System.out.println("Berserk health: " + health[7]);
+        System.out.println("Tor health: " + health[8]);
+        System.out.println("__________________________________");
+    }
+
+    public static boolean isFinished() {
+
         if (health[0] <= 0) {
-            System.out.println("Heroes Won!!!");
+            System.out.println("Heroes won!!!");
             return true;
         }
-        if (health[1] <= 0 && health[2] <= 0 && health[3] <= 0 && health[4] <= 0) {
-            System.out.println("Boss Won!!!");
+        if (health[1] <= 0 && health[2] <= 0 && health[3] <= 0 && health[4] <= 0 && health[5] <= 0 && health[6] <= 0 && health[7] <= 0 && health[8] <= 0) {
+            System.out.println("Boss won!!!");
             return true;
         }
         return false;
     }
 
-    public static void round() {
-        for (int i = 1; i < 5; i++) {
-            health[0] = playerHit(i);
-        }
-        if (health[0] <= 0) {
-            return;
-        }
-        for (int i = 1; i < 5; i++) {
-            int newHealth = bossHit(i);
-            if (newHealth < 0) {
-                health[i] = 0;
-            } else {
-                health[i] = newHealth;
-            }
-        }
-        for (int i = 1; i < 4; i++) {
-            health[i] = medicHealing(i);
-        }
-    }
-
-    public static int medicHealing(int playerIndex) {
-        int healing = 0;
-        if (health[4] > 0) {
-            healing = 30;
-        }
-        return health[playerIndex] + healing;
-    }
-
-    public static int bossHit(int playerIndex) {
-        return health[playerIndex] - hits[0];
-    }
-
     public static int playerHit(int playerIndex) {
-        Random random = new Random();
-        int randomInt = random.nextInt(5) + 1;
+        Random r = new Random();
+        int randomNumber = r.nextInt(7) + 2;
         if (hitTypes[0].equals(hitTypes[playerIndex])) {
-            System.out.println(hitTypes[playerIndex] + " hits " + hits[playerIndex] * randomInt);
-            return health[0] - hits[playerIndex] * randomInt;
+            System.out.println(hitTypes[playerIndex] + "hits:" + randomNumber + hits[playerIndex] * randomNumber);
+            if (hitTypes[playerIndex].equals(hitTypes[7])) {
+                health[0] = health[0] - 15;
+            }
+            return health[0] - hits[playerIndex] * randomNumber;
         } else {
             return health[0] - hits[playerIndex];
         }
     }
 
-    public static void changeBossDefence() {
-        Random random = new Random();
-        int randomInt = random.nextInt(3) + 1;
-        hitTypes[0] = hitTypes[randomInt];
+    public static int bossHit(int playerIndex) {
+        if (hitTypes[0].equals(hitTypes[8])) {
+            return health[playerIndex];
+        } else
+            return health[playerIndex] - hits[0];
     }
 
-    public static void printStatics() {
-        System.out.println("_____________________");
-        System.out.println("Boss health: " + health[0]);
-        System.out.println("Warrior health: " + health[1]);
-        System.out.println("Magical health: " + health[2]);
-        System.out.println("Kinetic health: " + health[3]);
-        System.out.println("Medical health: " + health[4]);
-        System.out.println("____________________");
+    public static void changeBossDefence() {
+        Random r = new Random();
+        int randomNum = r.nextInt(7) + 1;
+        hitTypes[0] = hitTypes[randomNum];
     }
+
 }
